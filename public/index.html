@@ -1,0 +1,224 @@
+<html>
+<head>
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fantasy Football Prep</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	
+    <style>
+	  #main { width: 100% }
+	  .sortable-14 { width: 1100px; }
+	  .sortable-12 { width: 950px; }
+	  .sortable-10 { width: 800px; }
+	  .sortable-8 { width: 650px; }
+      #sortable { list-style-type: none; margin: auto; padding: 0;}
+      #sortable li { margin: 1px 1px 1px 1px; padding: 10px 1px 1px 1px; float: left; width: 75px; height: 65px;  text-align: center; display: table-cell; cursor: grab; color: #444444; font-size: 11px;}
+	  #nav { width: 100%; font-size: x-large; text-align: center; color: #009900; padding-bottom: 20px; padding-top: 20px; font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;}
+	  #controls { width: 100%; text-align: center; margin-bottom: 10px; }
+	  #save-controls {margin-bottom: 10px;  display: table;  margin-left: auto; margin-right: auto;}
+	  #saveload { float: left;  margin-right: 10px; }
+	  #save-controls .input-group {width: 300px;}
+	  .RB { background-color: #e6e6ff; }
+	  .WR { background-color: #ccffcc; }
+	  .QB { background-color: #ffe6e6; }
+	  .TE { background-color: #ffe0b3; }
+	  .PK { background-color: #ffff99; }
+	  .DEF { background-color: #ffccff; }
+	  .dark { background-color: #444444;  color: #888888 !important; 
+	  li:nth-child(4) { float: clear;  color: red !important; }
+	  
+    </style>
+
+	<script src="/underscore/underscore.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.0/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+    <script>
+	
+	var savedPlayers = [];
+	
+	var loadGrid = function(players, teams) {
+	
+		// clear existing grid
+		$("#sortable").empty();
+			
+		for (var i = 0; i < players.length; i++) {
+			var playerName = players[i].playerName;
+			var position = players[i].position;
+			var team = players[i].team;
+			if (playerName) {
+				$("#sortable").append("<li id='" + playerName + "|" + position + "|" + team + "' class='" + position + "'>" + playerName + "<br />" + position + "</li>").data({playerName: playerName, position: position});
+			}
+		}
+		
+		$( "#sortable" ).sortable({
+			cursor: "grabbing",
+			helper: "clone"
+		});
+		$( "#sortable" ).disableSelection();	
+		
+		
+		setGridWidth(teams || 12);
+	}
+	
+	var setGridWidth = function(cols) {
+		$( "#sortable" ).removeClass("sortable-8").removeClass("sortable-10").removeClass("sortable-12").removeClass("sortable-14");
+		$( "#sortable" ).addClass("sortable-" + cols);
+	}
+	
+	var getData = function(req) {
+		$.get(
+			"http://localhost:3000/draftboard",
+			req,
+			function(data, status) {
+				
+				var players = JSON.parse(data);
+				savedPlayers = players;
+			   
+				loadGrid(players, req.teams);
+			}
+		);	
+	}
+	
+	var toJson = function(players) {
+		return _.map(players, function(player) {
+			var tokens = player.split("|");
+			return {
+				"playerName": tokens[0],
+				"position": tokens[1],
+				"team": tokens[2]
+			};
+		});	
+	}
+	
+    $( function() {
+	
+		// only allow btn in group to appear selected
+		$(".btn-group > .btn").click(function(){
+			$(this).addClass("active").siblings().removeClass("active");
+		});	
+		
+		// click handlers
+		$("#reset").click(function() {
+			var format = $('#format > .btn.active').text();
+			var teams = $('#teams > .btn.active').text();
+			
+			getData({
+				format: format,
+				teams: teams
+			});
+
+		});
+		
+		$("#save").click(function() {
+			// serialize data
+			var players = $("#sortable").sortable('toArray');
+			
+			window.localStorage.setItem("rank", players);
+			
+			var teams = $("#teams > .btn.active").attr('id').split("team")[0];
+			window.localStorage.setItem("teams", teams);
+			
+			alert('Data is saved to the browser, and available to retrieve by clicking "Load".');
+		});
+		
+		$("#load").click(function() {
+			var players = window.localStorage.getItem("rank").split(",");
+			var teams = window.localStorage.getItem("teams");
+			
+			// map to json
+			players = toJson(players);
+			loadGrid(players);
+			// initiate click to set grid size
+			$("#" + teams + "team").trigger('click');
+			
+			
+		});
+		
+		$("#email").click(function(){
+			var email = $('#emailinput').val();
+			var players = $("#sortable").sortable('toArray');
+			players = toJson(players);
+			
+			$.get(
+				"http://localhost:3000/email",
+				{
+					players: players,
+					email: email
+				},
+				function(data, status) {
+					
+					var response = JSON.parse(data);
+					if (response.success) {
+						alert('An email of your pre-selected draft order has been sent to ' + email);
+					}
+					else {
+						alert(response.errorMsg);
+					}
+				}
+			);	
+		});
+		
+		$("#teams > .btn").click(function() {
+			setGridWidth($(this).attr('id').split("team")[0]);
+		});
+		
+		$("#sortable").on("click", "li", function(){
+			$(this).toggleClass('dark');
+		});
+		
+		getData({
+		    format: 'standard',
+			teams: '12 teams'
+		});
+
+    } );
+    </script>
+</head>
+
+<body>
+    <div id="main">
+	    <div id="nav">Fantasy Football Prep</div>
+		<div class="well">
+			<div id="controls">
+				 <div class="btn-group" id="teams">
+					<button type="button" id="8team" class="btn btn-default">8 team</button>
+					<button type="button" id="10team" class="btn btn-default">10 team</button>
+					<button type="button" id="12team" class="btn btn-default active">12 team</button>
+					<button type="button" id="14team" class="btn btn-default">14 team</button>
+				</div>
+				 <div class="btn-group" id="format">
+					<button type="button" id="standard" class="btn btn-default active">Standard</button>
+					<button type="button" id="ppr" class="btn btn-default">PPR</button>
+					<button type="button" id="2qb" class="btn btn-default">2QB</button>
+				</div>
+				<button type="button" id="reset" class="btn btn-default">Reset Rankings</button>
+			</div>
+			
+			<div id="save-controls">
+				<div class="btn-group" id="saveload">
+					<button type="button" id="load" class="btn btn-default">Load</button>
+					<button type="button" id="save" class="btn btn-default">Save</button>
+				</div>
+				<div class="input-group">
+					<input type="text" class="form-control" id="emailinput">
+						<span class="input-group-btn">
+							<button class="btn btn-default" type="button" id="email">Email</button>
+						</span>
+					</input>
+				</div>
+			</div>
+		</div>
+		<ul id="sortable"></ul>
+	</div>
+
+</body>
+</html>
