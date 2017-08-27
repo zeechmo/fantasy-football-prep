@@ -1,6 +1,7 @@
 const express = require('express')  
 const https = require('https')
 const nodemailer = require('nodemailer')
+const xml2js = require('xml2js')
 const _ = require('underscore')
 const config = require('./config');
 const app = express()  
@@ -36,7 +37,9 @@ app.get('/email', (request, response) => {
 	html += '<p>Here are your custom draft rankings courtesy of <a href="http://www.fantasyfootballprep.com">Fantasy Football Prep</a>.</p>';
 	html += '<th>Your Rank</th><th>Player</th><th>Position</th><th>Team</th>';
 	for (var i = 0; i < players.length; i++) {
-		html += '<tr><td>' + (i+1) + '</td><td>' + players[i].playerName + '</td><td>' + players[i].position + '</td><td>' + players[i].team + '</td></tr>';
+
+		var isDark = !!players[i].dark;
+		html += '<tr><td>' + (!!players[i].favorite ? "&#9733;" : "") + '</td><td>' + (i+1) + '</td><td>' + (isDark ? '<s>' : '') + players[i].playerName + (isDark ? '</s>' : '') + '</td><td>' + players[i].position + '</td><td>' + players[i].team + '</td></tr>';
 	}
 	html += '</table></body><p>Good Luck!</p><p>Your friends at <a href="http://www.fantasyfootballprep.com">Fantasy Football Prep</a></html>';
 
@@ -90,13 +93,13 @@ app.get('/draftboard', (request, response) => {
 	var options = {
 		host: 'fantasyfootballcalculator.com',
 		port: 443,
-		path: '/adp_csv.php?format=' + format + '&teams=' + teams,
+		path: '/adp_xml.php?format=' + format + '&teams=' + teams,
 		rejectUnauthorized: false,
 		requestCert: true,
 		agent: false
 	};
 	
-	console.log(options.host + '/' + options.path);
+	console.log(options.host + options.path);
 
 	https.get(options, function(resp){
 		resp.setEncoding('utf8');
@@ -108,22 +111,25 @@ app.get('/draftboard', (request, response) => {
 		});
 		resp.on('end', function() {
 			
-			// parse csv into meaningful data to send to client
-			var players = [];
-			var lines = allData.split("\n");
-			for (var i = 0; i < lines.length; i++) {
-				if (i < 5) {
-					continue;
+			var xml = allData;
+			xml2js.parseString(xml, function(err, result) {
+				
+				// parse xml into meaningful data to send to client
+				var players = result.root.adp_data[0].player;
+				
+				var results = [];
+				for (var i = 0; i < players.length; i++) {
+					
+					results.push({
+						"playerName": players[i].name[0],
+						"position": players[i].pos[0],
+						"team": players[i].team[0]
+					});
 				}
-				var tokens = lines[i].split(",");
-				players.push({
-					"playerName": tokens[2],
-					"position": tokens[3],
-					"team": tokens[4]
-				});
-			}
+				
+				response.send(JSON.stringify(results));
+			});
 			
-			response.send(JSON.stringify(players));
 		});
 	}).on("error", function(e){
 		console.log("Got error: " + e.message);
