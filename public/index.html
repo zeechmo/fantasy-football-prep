@@ -7,7 +7,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Fantasy Football Prep</title>
+	<meta name="keywords" content="fantasy football rankings,fantasy football prep, draft flip">
+	<meta name="description" content="Custom fantasy football rankings aggregated from top experts to help you win your league.">
+    <title>Fantasy Football Rankings</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -27,7 +29,8 @@
 	  #saveload { float: left;  margin-right: 10px; }
 	  #save-controls .input-group {width: 300px;}
 	  .instructionsHeader { width: 100%; text-align: center;  color: #24292e; font-family: Verdana;}
-	  .instructions { width: 50%; margin-left: auto; margin-right: auto; text-align: center; color: #24292e; font-family: Verdana;}
+	  .instructions { width: 100%; color: #24292e; font-family: Verdana;}
+	  .instructionsul { width: 450px; margin-left: auto; margin-right: auto; }
 	  .RB { background-color: #19bffe; }
 	  .WR { background-color: #87d37c; }
 	  .QB { background-color: #f47983; }
@@ -282,7 +285,7 @@
 
 <body>
     <div id="main">
-		<div id="nav">FANTASY FOOTBALL PREP</div>
+		<div id="nav">DRAFTFLIP</div>
 		<div class="well">
 			<div id="controls">
 				 <div class="btn-group" id="teams">
@@ -313,8 +316,16 @@
 				</div>
 			</div>
 		</div>
-		<div class="instructionsHeader"><h3>Create your custom draft order</h3></div>
-		<div class="instructions">Drag and drop to move players up or down the grid, star your favorites or click to remove a player entirely. When finished you can save your selections or email them to yourself.</div>
+		<div class="instructionsHeader"><h3>Fantasy Football Rankings</h3></div>
+		<div class="instructions">
+			<ul class="instructionsul">
+				<li>Start with aggregated draft picks from fantasy experts</li>
+				<li>Drag and drop to create custom draft rankings</li>
+				<li>Star your favorites</li>
+				<li>Click to remove a player entirely from your rankings</li>
+				<li>Save your selections or email them to yourself</li>
+			</ul>
+		</div>
   		<div class="instructions"></div>
 		<div id="colHeader"></div>
 		<div id="grid">
