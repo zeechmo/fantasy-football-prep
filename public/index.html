@@ -7,8 +7,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="keywords" content="fantasy football rankings,fantasy football prep, draft flip">
-	<meta name="description" content="Custom fantasy football rankings aggregated from top experts to help you win your league.">
+	<meta name="keywords" content="fantasy football rankings, draft rule">
+	<meta name="description" content="Custom fantasy football rankings aggregated from top experts to help you rule your league.">
     <title>Fantasy Football Rankings</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
@@ -108,7 +108,7 @@
 	
 	var getData = function(req) {
 		$.get(
-			"http://68.66.193.99:3000/draftboard",
+			"http://draftrule.com/draftboard",
 			req,
 			function(data, status) {
 				
@@ -234,7 +234,7 @@
 			});
 			
 			$.get(
-				"http://68.66.193.99:3000/email",
+				"http://draftrule.com/email",
 				{
 					players: players,
 					email: email
@@ -285,7 +285,7 @@
 
 <body>
     <div id="main">
-		<div id="nav">DRAFTFLIP</div>
+		<div id="nav">RULE YOUR DRAFT</div>
 		<div class="well">
 			<div id="controls">
 				 <div class="btn-group" id="teams">
