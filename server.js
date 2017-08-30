@@ -24,8 +24,11 @@ app.get('/', (request, response) => {
 })
 
 app.post('/email', (request, response) => {
+
 	console.log(request.body);
+
 	var players = request.body.players;
+	console.log(_.values(request.body.players));
 	var email = request.body.email;
 	
 	// create reusable transporter object using the default SMTP transport
@@ -40,20 +43,20 @@ app.post('/email', (request, response) => {
 	// format html for email
 	var players = _.values(players);
 	let html = '<html><body><table>';
-	html += '<p>Here are your custom draft rankings courtesy of <a href="http://www.fantasyfootballprep.com">Fantasy Football Prep</a>.</p>';
+	html += '<p>Here are your custom draft rankings courtesy of <a href="http://www.fantasyfootballprep.com">DraftRule</a>.</p>';
 	html += '<th>Your Rank</th><th>Player</th><th>Position</th><th>Team</th>';
 	for (var i = 0; i < players.length; i++) {
 
 		var isDark = !!players[i].dark;
 		html += '<tr><td>' + (!!players[i].favorite ? "&#9733;" : "") + '</td><td>' + (i+1) + '</td><td>' + (isDark ? '<s>' : '') + players[i].playerName + (isDark ? '</s>' : '') + '</td><td>' + players[i].position + '</td><td>' + players[i].team + '</td></tr>';
 	}
-	html += '</table></body><p>Good Luck!</p><p>Your friends at <a href="http://www.fantasyfootballprep.com">Fantasy Football Prep</a></html>';
+	html += '</table></body><p>Good Luck!</p><p>Your friends at <a href="http://www.fantasyfootballprep.com">DraftRule</a></html>';
 
 	// setup email data with unicode symbols
 	let mailOptions = {
 		from: '"Support" <zbrownson@hotmail.com>', // sender address
 		to: email, // list of receivers
-		subject: 'Fantasy Football Prep - Custom Draft Order', // Subject line
+		subject: 'DraftRule - Custom Draft Order', // Subject line
 		text: '', // plain text body
 		html: html // html body
 	};

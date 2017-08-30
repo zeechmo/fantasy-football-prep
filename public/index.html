@@ -241,13 +241,16 @@
 				});				
 			});
 			
-			$.post(
-				"/email",
-				{
+			$.ajax({
+			    type: "POST",
+				url: "/email",
+				processData: false,
+				contentType: 'application/json',
+				data: JSON.stringify({
 					players: players,
 					email: email
-				},
-				function(data, status) {
+				}),
+				success: function(data, status) {
 					
 					var response = JSON.parse(data);
 					if (response.success) {
@@ -257,7 +260,8 @@
 						alert(response.errorMsg);
 					}
 				}
-			);	
+			});
+
 		});
 		
 		$("#teams > .btn").click(function() {
