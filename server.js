@@ -3,7 +3,8 @@ const https = require('https')
 const nodemailer = require('nodemailer')
 const xml2js = require('xml2js')
 const _ = require('underscore')
-const config = require('./config');
+const config = require('./config')
+const bodyParser = require("body-parser");
 const app = express()  
 const port = 3000
 
@@ -14,13 +15,18 @@ app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
 app.use('/gridstack', express.static(__dirname + '/node_modules/gridstack/dist/'));
 app.use('/underscore', express.static(__dirname + '/node_modules/underscore/'));
 
+//Here we are configuring express to use body-parser as middle-ware.
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 app.get('/', (request, response) => {  
   response.send('Hello from Express!')
 })
 
-app.get('/email', (request, response) => {
-	var players = request.query.players;
-	var email = request.query.email;
+app.post('/email', (request, response) => {
+	console.log(request.body);
+	var players = request.body.players;
+	var email = request.body.email;
 	
 	// create reusable transporter object using the default SMTP transport
 	let transporter = nodemailer.createTransport({
