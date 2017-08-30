@@ -108,7 +108,7 @@
 	
 	var getData = function(req) {
 		$.get(
-			"http://draftrule.com/draftboard",
+			"/draftboard",
 			req,
 			function(data, status) {
 				
@@ -234,7 +234,7 @@
 			});
 			
 			$.get(
-				"http://draftrule.com/email",
+				"/email",
 				{
 					players: players,
 					email: email
