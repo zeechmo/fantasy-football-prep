@@ -171,7 +171,7 @@
 				var id = playerName + "|" + position + "|" + team;
 				$("#sortable")
 					.append("<li id='" + id + "' class='" + position + 
-					" flip-container'><div class='flipper'><div class='front'><div class='glyphicon glyphicon-star-empty favorite'></div>" + playerName + "<br />" + position + "<div class='vor'>" + (Math.round(players[i].vor) > 0 ? "+":"") + Math.round(players[i].vor) + "</div></div>" +
+					" flip-container'><div class='flipper'><div class='front'><div class='glyphicon glyphicon-star-empty favorite'></div>" + playerName + "<br />" + position + "<span class='vor'>" + (Math.round(players[i].vor) > 0 ? "+":"") + Math.round(players[i].vor) + "</span></div>" +
 					"<div class='back'><div class='glyphicon glyphicon-star-empty favorite'></div>Points: " + Math.round(players[i].points) + "<br />Cost: $" + players[i].auctionValue + "<br />VOR: " + Math.round(players[i].vor) + "</div></div></li>")
 					.data("stats", {playerName: playerName, position: position});
 			}
