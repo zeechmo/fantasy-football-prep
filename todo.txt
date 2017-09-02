@@ -2,3 +2,5 @@
 - integrate "working" adp source - ffanalytics?
 - allow custom league settings ppr, 2qb, standard
 - flip tiles on hover - provide stats on back
+- click on draft position to highlight draft spots
+- add first aid kit icon to injured

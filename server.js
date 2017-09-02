@@ -5,6 +5,7 @@ const xml2js = require('xml2js')
 const _ = require('underscore')
 const config = require('./config')
 const bodyParser = require("body-parser");
+const csvtojson = require("csv-to-json");
 const app = express()  
 const port = 3000
 
@@ -25,10 +26,7 @@ app.get('/', (request, response) => {
 
 app.post('/email', (request, response) => {
 
-	console.log(request.body);
-
 	var players = request.body.players;
-	console.log(_.values(request.body.players));
 	var email = request.body.email;
 	
 	// create reusable transporter object using the default SMTP transport
@@ -97,8 +95,17 @@ app.get('/draftboard', (request, response) => {
 		teams = 12;
 	}
 	
-	console.log(teams);
-
+	var obj = {
+		filename: format === "PPR" ? 'public/ppr_rank.csv' : 'public/standard_rank.csv'
+	};
+	csvtojson.parse(obj, function(err, json) {
+		
+		response.send(JSON.stringify(json));
+	});
+	
+	
+	
+	/*
 	var options = {
 		host: 'fantasyfootballcalculator.com',
 		port: 443,
@@ -108,8 +115,6 @@ app.get('/draftboard', (request, response) => {
 		agent: false
 	};
 	
-	console.log(options.host + options.path);
-
 	https.get(options, function(resp){
 		resp.setEncoding('utf8');
 		
@@ -143,7 +148,7 @@ app.get('/draftboard', (request, response) => {
 	}).on("error", function(e){
 		console.log("Got error: " + e.message);
 	});
-	
+	*/
 })
 
 

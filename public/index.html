@@ -22,7 +22,7 @@
 	  .sortable-8 { width: 650px; }
 	  #grid { margin: auto;}
       #sortable { list-style-type: none; padding: 0;}
-      #sortable li { margin: 1px 1px 1px 1px; padding: 10px 1px 1px 1px; float: left; width: 75px; height: 65px;  text-align: center; display: table-cell; cursor: grab; color: #333333; font-size: 11px; position: relative;}
+      #sortable li { margin: 1px 1px 1px 1px;  float: left; width: 75px; height: 65px;  text-align: center; display: table-cell; cursor: grab; color: #333333; font-size: 11px; position: relative;}
 	  #nav { background-color: #24292e; font-size: large; color: #19bffe; padding-top: 20px; padding-bottom: 10px; width: 100%; text-align: center; font-family: verdana; }
 	  .subheader { font-size: small; color: #f4D03F;}
 	  #controls { width: 100%; text-align: center; margin-bottom: 10px; }
@@ -32,13 +32,20 @@
 	  .instructionsHeader { width: 100%; text-align: center;  color: #24292e; font-family: Verdana;}
 	  .instructions { width: 100%; color: #24292e; font-family: Verdana;}
 	  .instructionsul { width: 450px; margin-left: auto; margin-right: auto; }
-	  .RB { background-color: #19bffe; }
-	  .WR { background-color: #87d37c; }
-	  .QB { background-color: #f47983; }
-	  .TE { background-color: #f4D03F; }
-	  .PK { background-color: #E29C45; }
-	  .DEF { background-color: #b390d4; }
-	  .dark { background-color: #444444;  color: #888888 !important; }
+	  .RB .front { background-color: #19bffe; }
+	  .RB .back { background-color: #19bffe;}
+	  .WR .front { background-color: #87d37c; }
+	  .WR .back {background-color: #87d37c;}
+	  .QB .front { background-color: #f47983; }
+	  .QB .back {background-color: #f47983;}
+	  .TE .front { background-color: #f4D03F; }
+	  .TE .back {background-color: #f4D03F;}
+	  .PK .front { background-color: #E29C45; }
+	  .PK .back {background-color: #E29C45; }
+	  .DEF .front { background-color: #b390d4; }
+	  .DEF .back {background-color: #b390d4;}
+	  .dark .front { background-color: #444444;  color: #888888 !important; }
+	  .dark .back { background-color: #444444;  color: #888888 !important; }
 	  
 	  .sortableWrapper { float: left; }
 	  #rowHeader { clear: both; float: left; color: #888888;}
@@ -55,8 +62,71 @@
 		  .favorite {  top: 24px }
 		  .colHeader { display: none; }
 		  .rowHeader { display: none; }
+		  .front { width: 300px; !important; height: 40px !important; line-height: 12px !important; padding-top: 10px;}
+		  .back { display: none; }
 		  #grid { width: unset; }
 	  }
+	  
+	  @media only screen and (min-width: 1101px) {
+		  .flip-container {
+				position:relative;
+				-webkit-perspective: 1000;
+				-moz-perspective: 1000;
+				-ms-perspective: 1000;
+				perspective: 1000;
+			}
+			.flip-container:hover .flipper {
+				-webkit-backface-visibility: hidden;
+				-moz-backface-visibility: hidden;
+				backface-visibility: hidden;
+				-ms-backface-visibility: hidden;
+				-webkit-transform: rotateY(180deg);
+				-moz-transform: rotateY(180deg);
+				-o-transform:rotateY(180deg);
+				transform: rotateY(180deg);
+				-ms-transform: rotateY(180deg);
+				filter: FlipH;
+				-moz-filter: FlipH;
+				-ms-filter:"FlipH";
+			}
+			
+			.flipper {
+				-webkit-transition: 0.8s;
+				-webkit-transform-style: preserve-3d;
+				-ms-transition: 0.8s;
+				-ms-transform-style: preserve-3d;
+				-moz-transition: 0.8s;
+				-moz-transform-style: preserve-3d;
+				transition: 0.8s;
+				transform-style: preserve-3d;
+				position: relative;
+			}
+
+			.front, .back {
+				-webkit-backface-visibility: hidden;
+				-moz-backface-visibility: hidden;
+				-ms-backface-visibility: hidden;
+				backface-visibility: hidden;
+				position: absolute;
+				width: 75px;
+				height: 65px;
+				padding-top: 10px;
+			}
+
+			.front:hover {
+				transition: all 0.7s ease-in-out;
+				-moz-transition: all 0.7s ease-in-out;
+				-webkit-transition: all 0.7s ease-in-out;
+			}
+			.back {
+				-webkit-transform: rotateY(180deg);
+				-ms-transform: rotateY(180deg);
+				-moz-transform: rotateY(180deg);
+				transform: rotateY(180deg);
+				filter: FlipH;
+				-ms-filter: FlipH;
+			}
+		}
 	  
     </style>
 
@@ -86,7 +156,7 @@
 		
 		// clear existing grid
 		$("#sortable").empty();
-			
+		
 		for (var i = 0; i < players.length; i++) {
 			var playerName = players[i].playerName;
 			var position = players[i].position;
@@ -94,7 +164,9 @@
 			if (playerName) {
 				var id = playerName + "|" + position + "|" + team;
 				$("#sortable")
-					.append("<li id='" + id + "' class='" + position + "'><div class='glyphicon glyphicon-star-empty favorite'></div>" + playerName + "<br />" + position + "</li>")
+					.append("<li id='" + id + "' class='" + position + 
+					" flip-container'><div class='flipper'><div class='front'><div class='glyphicon glyphicon-star-empty favorite'></div>" + playerName + "<br />" + position + "</div>" +
+					"<div class='back'><div class='glyphicon glyphicon-star-empty favorite'></div>Points: " + Math.round(players[i].points) + "<br />Cost: $" + players[i].auctionValue + "<br />VOR: " + Math.round(players[i].vor) + "</div></div></li>")
 					.data("stats", {playerName: playerName, position: position});
 			}
 		}
@@ -159,7 +231,7 @@
 		});	
 		
 		// click handlers
-		$("#reset").click(function() {
+		$("#format").click(function() {
 			var format = $('#format > .btn.active').text();
 			var teams = parseInt($('#teams > .btn.active').val(), 10);
 			
@@ -172,7 +244,6 @@
 		
 		$("#save").click(function() {
 			// serialize data
-			
 			var players = $("#sortable").sortable('toArray');
 			window.localStorage.setItem("rank", players);
 			
@@ -183,8 +254,8 @@
 			window.localStorage.setItem("dark", dark);
 			
 			var favorites = [];
-			$(".isfavorite").each(function() {
-				favorites.push(this.id);
+			$(".isfavorite.front").each(function() {
+				favorites.push($(this).closest("li").attr("id"));
 			});
 			window.localStorage.setItem("favorites", favorites);
 			
@@ -199,10 +270,10 @@
 			var teams = window.localStorage.getItem("teams");
 			var dark = window.localStorage.getItem("dark");
 			var favorites = window.localStorage.getItem("favorites");
+			var format = window.localStorage.getItem("format");
 			
 			// map to json
 			players = toJson(players);
-			loadGrid(players);
 			
 			// initiate click to set grid size
 			$("#" + teams + "team").trigger('click');
@@ -213,7 +284,8 @@
 			});
 			_.each(favorites.split(","), function(item) {
 				$("li[id='" + item + "']").addClass('isfavorite');
-				$("li[id='" + item + "'] div").removeClass('glyphicon-star-empty').addClass('glyphicon-star');
+				$("li[id='" + item + "'] .front .glyphicon").removeClass('glyphicon-star-empty').addClass('glyphicon-star');
+				$("li[id='" + item + "'] .back .glyphicon").removeClass('glyphicon-star-empty').addClass('glyphicon-star');
 			});
 		});
 		
@@ -236,7 +308,7 @@
 			
 			var favorites = [];
 			$(".isfavorite").each(function() {
-				favorites.push(this.id);
+				favorites.push($(this).closest("li").attr("id"));
 			});
 			favorites = toJson(favorites);
 			
@@ -288,11 +360,15 @@
 			
 			if ($(this).hasClass("glyphicon-star")) {
 				$(this).removeClass("glyphicon-star").addClass("glyphicon-star-empty");
+				$(this).parent().parent().find(".front div").removeClass("glyphicon-star").addClass("glyphicon-star-empty");
 				$(this).parent().removeClass("isfavorite");
+				$(this).parent().parent().find(".front div").parent().removeClass("isfavorite");
 			}
 			else {
 				$(this).removeClass("glyphicon-star-empty").addClass("glyphicon-star");
+				$(this).parent().parent().find(".front div").removeClass("glyphicon-star-empty").addClass("glyphicon-star");
 				$(this).parent().addClass("isfavorite");
+				$(this).parent().parent().find(".front div").parent().addClass("isfavorite");
 			}
 			
 			return false;
@@ -319,11 +395,9 @@
 					<button type="button" id="14team" class="btn btn-default" value="14">14 team</button>
 				</div>
 				 <div class="btn-group" id="format">
-					<button type="button" id="standard" class="btn btn-default active hidden">Standard</button>
-					<button type="button" id="ppr" class="btn btn-default hidden">PPR</button>
-					<button type="button" id="2qb" class="btn btn-default hidden">2QB</button>
+					<button type="button" id="standard" class="btn btn-default active">Standard</button>
+					<button type="button" id="ppr" class="btn btn-default">PPR</button>
 				</div>
-				<button type="button" id="reset" class="btn btn-default hidden">Reset Rankings</button>
 			</div>
 			
 			<div id="save-controls">
